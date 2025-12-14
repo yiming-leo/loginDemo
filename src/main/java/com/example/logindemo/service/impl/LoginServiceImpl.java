@@ -16,7 +16,7 @@ import java.util.Date;
 /**
  * @author 24797
  * @version 1.0
- * @description TODO
+ * @description a login related service with login method, including auth judge
  * @date 2025/12/13 23:41
  */
 

@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * @author 24797
  * @version 1.0
- * @description TODO
+ * @description a general service with hello method, including a simple Hello World, need auth(SecurityConfig)
  * @date 2025/12/14 17:21
  */
 

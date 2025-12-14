@@ -48,7 +48,7 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated()
                 )
-                //
+                // save to auth Manually
                 .securityContext(securityContext ->
                         securityContext.requireExplicitSave(false)
                 )
@@ -67,7 +67,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                         // 顶号 or not
-                        .maximumSessions(2)
+                        .maximumSessions(1)
                         .maxSessionsPreventsLogin(false)
                 );
         return httpSecurity.build();

@@ -1,7 +1,6 @@
 package com.example.logindemo.service;
 
 import com.example.logindemo.common.Response;
-import org.springframework.stereotype.Service;
 
 /**
  * @author 24797
