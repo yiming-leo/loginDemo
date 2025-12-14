@@ -1,8 +1,14 @@
 package com.example.logindemo.service.impl;
 
 import com.example.logindemo.common.Response;
-import com.example.logindemo.entity.User;
+import com.example.logindemo.dto.LoginUserDTO;
 import com.example.logindemo.service.LoginService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -17,15 +23,27 @@ import java.util.Date;
 @Service
 public class LoginServiceImpl implements LoginService {
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     @Override
-    public Response login(User user) {
-        String username = user.getUsername();
-        String password = user.getPassword();
-        // test account
-        if (username.equals("test") && password.equals("123456")) {
-            return Response.success(200, "login success", new Date());
-        } else {
-            return Response.error(401, "login failed", new Date());
+    public Response login(LoginUserDTO loginUserDTO) {
+
+        try {
+            // Auth the account: release or deny
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginUserDTO.getUsername(),
+                            loginUserDTO.getPassword()
+                    )
+            );
+            // if succeed set AUTH-STATUS into Session
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            //System.out.println("User: " + loginUserDTO.getUsername() + " Login Success, timestamp: " + new Date());
+            return Response.success(200, "Login Success", new Date());
+        } catch (AuthenticationException ae) {
+            //System.out.println("User: " + loginUserDTO.getUsername() + " Login Failed, timestamp: " + new Date());
+            return Response.error(401, "Unauthorized", new Date());
         }
     }
 }

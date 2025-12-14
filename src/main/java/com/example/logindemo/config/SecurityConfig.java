@@ -2,9 +2,14 @@ package com.example.logindemo.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -36,23 +41,58 @@ public class SecurityConfig {
         httpSecurity
                 //DENY CSRF
                 .csrf(csrf -> csrf.disable())
-                // ACCESS ANY RESOURCE IS DENIED EXCEPT "/", "/login"
+                // ACCESS ANY RESOURCE IS DENIED EXCEPT "/api/login"
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/", "/login")
+                        .requestMatchers("/api/login")
                         .permitAll()
                         .anyRequest()
                         .authenticated()
                 )
-                //// LOGIN PAGE & LOGIN JUMP PAGE DEFINE
-                //.formLogin(form -> form
-                //        .loginPage("/login")
-                //        .defaultSuccessUrl("/dashboard", true)
-                //        .permitAll())
-                // LOGOUT JUMP PAGE DEFINE
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/")
-                        .permitAll()
+                //
+                .securityContext(securityContext ->
+                        securityContext.requireExplicitSave(false)
+                )
+                //.httpBasic()
+                // UN-AUTHED HANDLING
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) ->
+                                {
+                                    response.setContentType("application/json");
+                                    response.setStatus(401);
+                                    response.getWriter().write("{\"error\":\"Please login first\"}");
+                                }
+                        )
+                )
+                // Session Management, when login successfully, a session could be auto storage
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        // 顶号 or not
+                        .maximumSessions(2)
+                        .maxSessionsPreventsLogin(false)
                 );
         return httpSecurity.build();
+    }
+
+    /**
+     * @param authenticationConfiguration spring security's auth main entrance
+     * @return org.springframework.security.authentication.AuthenticationManager* @
+     * @description Expose the Manager, could use it in @service
+     * @author 24797
+     * @date 2025/12/14 14:27
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    /**
+    *
+    * @return PasswordEncoder
+    * @author 24797
+    * @date 2025/12/14 16:05
+    */
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

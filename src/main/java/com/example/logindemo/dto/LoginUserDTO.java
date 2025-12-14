@@ -1,27 +1,19 @@
-package com.example.logindemo.entity;
+package com.example.logindemo.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
 
 /**
  * @author 24797
  * @version 1.0
- * @description user info
- * @date 2025/12/13 23:45
+ * @description user's DTO for login
+ * @date 2025/12/14 13:42
  */
-@NoArgsConstructor
+
 @AllArgsConstructor
-@EqualsAndHashCode
-public class User implements Serializable {
-
-    // username when login
+@NoArgsConstructor
+public class LoginUserDTO {
     private String username;
-
-    // password when login
     private String password;
 
     public String getUsername() {
@@ -42,7 +34,7 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "LoginUser{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';
